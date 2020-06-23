@@ -1,6 +1,6 @@
 import Ask from 'https://deno.land/x/ask/mod.ts';
 
-const ingredients: {[name: string]: number} = {
+const ingredients: { [name: string]: number } = {
     'flour': 120,
     '00 flour': 106,
     'whole wheat flour': 113,
@@ -25,31 +25,50 @@ const ingredients: {[name: string]: number} = {
 };
 
 
-const ask = new Ask();
-
-const whichOne = await ask.input({
-    
-      name: 'ingredient',
-      type: 'string',
-      message: 'Which ingredient would you like to convert?'
-    
+const ask = new Ask({
+    prefix: '>>'
 });
 
-function convert(amount: number, ing: number) {
-    return `That is ${amount * ing} grams`;
-}
 
 
 
-if (Object.keys(ingredients).includes(whichOne.ingredient)) {
-    const howMuch = await ask.input({
-        name: 'amount',
-        type: 'number',
-        message: 'Enter an amount (usually in cups):'
+
+const startConversion = async () => {
+
+    const whichOne = await ask.input({
+
+        name: 'ingredient',
+        type: 'string',
+        message: 'Which ingredient would you like to convert?'
+
     });
-    console.log(convert(howMuch.amount, ingredients[whichOne.ingredient]))
-} else {
-    console.log("I can't convert that.")
+
+    const convert = (amount: number, ing: number) => {
+        return `That is ${amount * ing} grams`;
+    }
+
+
+    if (Object.keys(ingredients).includes(whichOne.ingredient)) {
+        const howMuch = await ask.input({
+            name: 'amount',
+            type: 'number',
+            message: 'Enter an amount (usually in cups):'
+        });
+        console.log(convert(howMuch.amount, ingredients[whichOne.ingredient]))
+    } else {
+        console.log("I can't convert that.")
+    }
+    
+    const again = await ask.confirm({
+        name: 'runAgain',
+        message: 'Convert another ingredient?'
+    })
+    if (again.runAgain) {
+        startConversion();
+    }
+    
 }
 
-  
+startConversion();
+
+
